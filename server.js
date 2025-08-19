@@ -1,4 +1,6 @@
+// Load environment variables first
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -20,7 +22,10 @@ const orderRoutes = require('./routes/orders');
 const app = express();
 
 // Connect to Database
-connectDB();
+connectDB().catch(err => {
+  console.error('Failed to connect to MongoDB:', err);
+  process.exit(1);
+});
 
 // Security Middleware
 app.use(helmet()); // Set security HTTP headers

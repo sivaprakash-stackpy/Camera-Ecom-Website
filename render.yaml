@@ -2,7 +2,9 @@ services:
   - type: web
     name: camera-ecom-backend
     env: node
-    buildCommand: npm install
+    buildCommand: |
+      npm install
+      cd public && npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV

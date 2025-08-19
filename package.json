@@ -4,7 +4,7 @@
   "description": "A stylish camera e-commerce website",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node render-start.js",
     "server": "node server.js",
     "client": "cd public && npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
