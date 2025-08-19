@@ -2,7 +2,6 @@ const express = require('express');
 const { check, validationResult } = require('express-validator');
 const Product = require('../models/Product');
 const { protect, authorize } = require('../middleware/auth');
-const admin = require('../middleware/admin');
 
 // Create a middleware that combines protect and authorize('admin')
 const adminAuth = [protect, authorize('admin')];
