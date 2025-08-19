@@ -1,8 +1,11 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
 const Product = require('../models/Product');
-const auth = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 const admin = require('../middleware/admin');
+
+// Create a middleware that combines protect and authorize('admin')
+const adminAuth = [protect, authorize('admin')];
 
 const router = express.Router();
 
@@ -60,8 +63,8 @@ router.get('/:id', async (req, res) => {
 router.post(
   '/',
   [
-    auth,
-    admin,
+    protect,
+    authorize('admin'),
     [
       check('name', 'Name is required').not().isEmpty(),
       check('price', 'Please include a valid price').isNumeric(),
@@ -94,7 +97,7 @@ router.post(
 // @route   PUT api/products/:id
 // @desc    Update a product
 // @access  Private/Admin
-router.put('/:id', [auth, admin], async (req, res) => {
+router.put('/:id', adminAuth, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -118,7 +121,7 @@ router.put('/:id', [auth, admin], async (req, res) => {
 // @route   DELETE api/products/:id
 // @desc    Delete a product
 // @access  Private/Admin
-router.delete('/:id', [auth, admin], async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -143,7 +146,7 @@ router.delete('/:id', [auth, admin], async (req, res) => {
 router.post(
   '/:id/reviews',
   [
-    auth,
+    protect,
     [
       check('rating', 'Please include a rating between 1 and 5').isInt({ min: 1, max: 5 }),
       check('comment', 'Please include a comment').not().isEmpty()
