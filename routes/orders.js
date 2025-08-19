@@ -1,8 +1,11 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
-const auth = require('../middleware/auth');
+const { auth, authorize } = require('../middleware/auth');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+
+// Create a middleware that combines auth and authorize('admin')
+const adminAuth = [auth, authorize('admin')];
 
 const router = express.Router();
 
@@ -172,7 +175,7 @@ router.put('/:id/pay', auth, async (req, res) => {
 // @route   PUT api/orders/:id/deliver
 // @desc    Update order to delivered
 // @access  Private/Admin
-router.put('/:id/deliver', [auth, admin], async (req, res) => {
+router.put('/:id/deliver', adminAuth, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
 
@@ -194,7 +197,7 @@ router.put('/:id/deliver', [auth, admin], async (req, res) => {
 // @route   GET api/orders
 // @desc    Get all orders
 // @access  Private/Admin
-router.get('/', [auth, admin], async (req, res) => {
+router.get('/', adminAuth, async (req, res) => {
   try {
     const orders = await Order.find({}).populate('user', 'id name');
     res.json(orders);
