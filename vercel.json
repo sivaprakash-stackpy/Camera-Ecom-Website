@@ -4,7 +4,11 @@
     {
       "src": "public/package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "build" }
+      "config": { 
+        "distDir": "build",
+        "installCommand": "cd public && npm install",
+        "buildCommand": "cd public && npm run build"
+      }
     },
     {
       "src": "server.js",
@@ -12,13 +16,10 @@
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "server.js"
-    },
-    {
-      "src": "/.*",
-      "dest": "public/index.html"
-    }
+    { "src": "/api/(.*)", "dest": "server.js" },
+    { "src": "/static/(.*)", "dest": "/public/static/$1" },
+    { "src": "/css/(.*)", "dest": "/public/css/$1" },
+    { "src": "/js/(.*)", "dest": "/public/js/$1" },
+    { "src": "/(.*)", "dest": "/public/index.html" }
   ]
 }
