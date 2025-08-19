@@ -2,8 +2,11 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
-const auth = require('../middleware/auth');
+const { auth, authorize } = require('../middleware/auth');
 const User = require('../models/User');
+
+// Create a middleware that combines auth and authorize('admin')
+const adminAuth = [auth, authorize('admin')];
 
 const router = express.Router();
 
@@ -188,7 +191,7 @@ router.post('/logout', auth, (req, res) => {
 // @route   GET api/users
 // @desc    Get all users
 // @access  Private/Admin
-router.get('/', [auth, admin], async (req, res) => {
+router.get('/', adminAuth, async (req, res) => {
   try {
     const users = await User.find().select('-password');
     res.json(users);
@@ -201,7 +204,7 @@ router.get('/', [auth, admin], async (req, res) => {
 // @route   GET api/users/:id
 // @desc    Get user by ID
 // @access  Private/Admin
-router.get('/:id', [auth, admin], async (req, res) => {
+router.get('/:id', adminAuth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
 
@@ -222,7 +225,7 @@ router.get('/:id', [auth, admin], async (req, res) => {
 // @route   DELETE api/users/:id
 // @desc    Delete user
 // @access  Private/Admin
-router.delete('/:id', [auth, admin], async (req, res) => {
+router.delete('/:id', adminAuth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
