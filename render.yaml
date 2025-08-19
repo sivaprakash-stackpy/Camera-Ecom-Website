@@ -3,17 +3,19 @@ services:
     name: camera-ecom-backend
     env: node
     buildCommand: npm install
-    startCommand: node server.js
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
       - key: MONGO_URI
-        fromDatabase:
-          name: camerastore
-          property: connectionString
+        value: mongodb+srv://cameraAdmin:luci@cluster0.jwk8czj.mongodb.net/camerastore?retryWrites=true&w=majority
       - key: JWT_SECRET
-        generateValue: true
+        value: your_jwt_secret_here
+      - key: JWT_EXPIRE
+        value: 30d
       - key: PAYPAL_CLIENT_ID
-        sync: false
+        value: your_paypal_client_id
+    healthCheckPath: /api/health
+    autoDeploy: true

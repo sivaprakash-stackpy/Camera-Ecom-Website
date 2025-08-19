@@ -51,6 +51,15 @@ if (process.env.NODE_ENV === 'development') {
 // Compress all responses
 app.use(compression());
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // API Routes
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
