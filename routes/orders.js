@@ -1,11 +1,11 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
-const { auth, authorize } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 
 // Create a middleware that combines auth and authorize('admin')
-const adminAuth = [auth, authorize('admin')];
+const adminAuth = [protect, authorize('admin')];
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ const router = express.Router();
 router.post(
   '/',
   [
-    auth,
+    protect,
     [
       check('orderItems', 'Order items are required').not().isEmpty(),
       check('shippingAddress', 'Shipping address is required').not().isEmpty(),
@@ -100,7 +100,7 @@ router.post(
 // @route   GET api/orders/myorders
 // @desc    Get logged in user orders
 // @access  Private
-router.get('/myorders', auth, async (req, res) => {
+router.get('/myorders', protect, async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user.id });
     res.json(orders);
@@ -113,7 +113,7 @@ router.get('/myorders', auth, async (req, res) => {
 // @route   GET api/orders/:id
 // @desc    Get order by ID
 // @access  Private
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', protect, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).populate(
       'user',
@@ -142,7 +142,7 @@ router.get('/:id', auth, async (req, res) => {
 // @route   PUT api/orders/:id/pay
 // @desc    Update order to paid
 // @access  Private
-router.put('/:id/pay', auth, async (req, res) => {
+router.put('/:id/pay', protect, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
 
@@ -175,7 +175,7 @@ router.put('/:id/pay', auth, async (req, res) => {
 // @route   PUT api/orders/:id/deliver
 // @desc    Update order to delivered
 // @access  Private/Admin
-router.put('/:id/deliver', adminAuth, async (req, res) => {
+router.put('/:id/deliver', protect, authorize('admin'), async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
 

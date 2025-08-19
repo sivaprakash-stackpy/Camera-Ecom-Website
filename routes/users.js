@@ -2,11 +2,11 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
-const { auth, authorize } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 const User = require('../models/User');
 
 // Create a middleware that combines auth and authorize('admin')
-const adminAuth = [auth, authorize('admin')];
+const adminAuth = [protect, authorize('admin')];
 
 const router = express.Router();
 
@@ -125,7 +125,7 @@ router.post(
 // @route   GET api/users/me
 // @desc    Get current user profile
 // @access  Private
-router.get('/me', auth, async (req, res) => {
+router.get('/me', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
@@ -138,7 +138,7 @@ router.get('/me', auth, async (req, res) => {
 // @route   PUT api/users/me
 // @desc    Update user profile
 // @access  Private
-router.put('/me', [auth, [
+router.put('/me', [protect, [
   check('name', 'Name is required').not().isEmpty(),
   check('email', 'Please include a valid email').isEmail()
 ]], async (req, res) => {
@@ -181,7 +181,7 @@ router.put('/me', [auth, [
 // @route   POST api/users/logout
 // @desc    Logout user / clear cookie
 // @access  Private
-router.post('/logout', auth, (req, res) => {
+router.post('/logout', protect, (req, res) => {
   res.clearCookie('token');
   res.json({ success: true, message: 'Logged out successfully' });
 });
