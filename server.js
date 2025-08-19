@@ -12,6 +12,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const connectDB = require('./config/db');
+const { protect, authorize } = require('./middleware/auth');
 
 // Import routes
 const productRoutes = require('./routes/products');
